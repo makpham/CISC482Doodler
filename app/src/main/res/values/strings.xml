@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">CISC482Doodler</string>
+    <string name="app_name">Doodler</string>
+    <string name="button_brush">BRUSH</string>
+    <string name="button_invert">INVERT</string>
+    <string name="button_clear">CLEAR</string>
+    <string name="button_undo">&lt;</string>
+    <string name="button_redo">&gt;</string>
 </resources>
