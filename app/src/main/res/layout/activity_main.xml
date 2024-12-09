@@ -1,66 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF">
+    android:layout_height="match_parent">
 
-    <!-- Toolbar for buttons -->
+    <!-- DoodleView container -->
+    <FrameLayout
+        android:id="@+id/doodleContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttonContainer" />
+
+    <!-- Button container at the bottom -->
     <LinearLayout
+        android:id="@+id/buttonContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
-        android:padding="8dp"
-        android:background="#F5F5F5"
-        android:elevation="4dp">
+        android:background="#EFEFEF"
+        android:padding="10dp"
+        android:gravity="center">
 
+        <!-- Buttons -->
         <Button
             android:id="@+id/brushButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_brush"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_marginEnd="8dp" />
-
-        <Button
-            android:id="@+id/invertButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_invert"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_marginEnd="8dp" />
+            android:text="Brush"
+            android:layout_margin="5dp" />
 
         <Button
             android:id="@+id/clearButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_clear"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_marginEnd="8dp" />
+            android:text="Clear"
+            android:layout_margin="5dp" />
 
         <Button
             android:id="@+id/undoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_undo"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_marginEnd="8dp" />
+            android:text="Undo"
+            android:layout_margin="5dp" />
 
         <Button
             android:id="@+id/redoButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/button_redo"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:text="Redo"
+            android:layout_margin="5dp" />
     </LinearLayout>
-
-    <!-- Container for DoodleView -->
-    <FrameLayout
-        android:id="@+id/doodleContainer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#FFFFFF" />
-</LinearLayout>
-
+</RelativeLayout>
