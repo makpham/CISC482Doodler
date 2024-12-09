@@ -3,103 +3,100 @@ package com.example.cisc482doodler;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 public class DoodleView extends View {
-    private Paint paint;
-    private ArrayList<Point> points;
-    private Stack<Point> undoStack;
-    private boolean isInverted = false;
-    private float brushSize = 10f; // Default brush size
+    private Paint paint; // Paint object for drawing
+    private Path currentPath; // Current path being drawn
+    private Stack<Path> undoStack; // Stack to store paths for undo
+    private Stack<Path> redoStack; // Stack to store paths for redo
 
     public DoodleView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        // Initialize paint
         paint = new Paint();
-        paint.setColor(0xFF000000); // Black color by default
-        paint.setStrokeWidth(brushSize);
-        points = new ArrayList<>();
+        paint.setColor(0xFF000000); // Default black color
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(10f); // Default brush size
+        paint.setAntiAlias(true);
+
+        // Initialize paths and stacks
+        currentPath = new Path();
         undoStack = new Stack<>();
+        redoStack = new Stack<>();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (isInverted) {
-            paint.setColor(0xFFFFFFFF);
-        } else {
-            paint.setColor(0xFF000000);
+
+        // Draw all paths from the undoStack
+        for (Path path : undoStack) {
+            canvas.drawPath(path, paint);
         }
 
-        for (Point point : points) {
-            paint.setStrokeWidth(brushSize);
-            canvas.drawPoint(point.x, point.y, paint);
-        }
+        // Draw the current path being drawn
+        canvas.drawPath(currentPath, paint);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_MOVE || event.getAction() == MotionEvent.ACTION_DOWN) {
-            points.add(new Point(event.getX(), event.getY()));
-            invalidate();
+        float x = event.getX();
+        float y = event.getY();
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                // Start a new path
+                currentPath = new Path();
+                currentPath.moveTo(x, y);
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                // Continue drawing the path
+                currentPath.lineTo(x, y);
+                break;
+
+            case MotionEvent.ACTION_UP:
+                // Add the finished path to the undoStack
+                undoStack.push(currentPath);
+                currentPath = new Path(); // Reset the current path
+                redoStack.clear(); // Clear redoStack when a new path is added
+                break;
         }
+
+        invalidate(); // Redraw the view
         return true;
     }
 
-    // Get current brush size
-    public float getBrushSize() {
-        return brushSize;
-    }
-
-    // Set brush size
-    public void setBrushSize(float size) {
-        brushSize = size;
-        paint.setStrokeWidth(size);
-        invalidate(); // Redraw with the new brush size
-    }
-
-    // Clear the doodle
-    public void clear() {
-        points.clear();
-        undoStack.clear(); // Clear undo history as well
-        invalidate(); // Redraw the view
-    }
-
-    // Invert the colors
-    public void invertColors() {
-        isInverted = !isInverted; // Toggle inversion
-        invalidate(); // Redraw the view with the new colors
-    }
-
-    // Undo the last action
     public void undo() {
-        if (!points.isEmpty()) {
-            // Remove the last point and save it to the undo stack
-            undoStack.push(points.remove(points.size() - 1));
-            invalidate(); // Redraw the view
-        }
-    }
-
-    // Redo the last undone action
-    public void redo() {
         if (!undoStack.isEmpty()) {
-            // Restore the last undone point back to the points list
-            points.add(undoStack.pop());
+            // Move the last path from undoStack to redoStack
+            Path lastPath = undoStack.pop();
+            redoStack.push(lastPath);
             invalidate(); // Redraw the view
         }
     }
 
-    // Class to store a point's coordinates
-    private static class Point {
-        float x, y;
-
-        Point(float x, float y) {
-            this.x = x;
-            this.y = y;
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            // Move the last path from redoStack to undoStack
+            Path restoredPath = redoStack.pop();
+            undoStack.push(restoredPath);
+            invalidate();
         }
+    }
+
+    public void clear() {
+        // Clear all stacks and the current path
+        undoStack.clear();
+        redoStack.clear();
+        currentPath.reset(); // Reset the current path
+        invalidate(); // Redraw the view
     }
 }
