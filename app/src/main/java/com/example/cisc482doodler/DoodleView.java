@@ -15,6 +15,7 @@ public class DoodleView extends View {
     private Path currentPath; // Current path being drawn
     private Stack<Path> undoStack; // Stack to store paths for undo
     private Stack<Path> redoStack; // Stack to store paths for redo
+    private float brushSize = 10f; // Default brush size
 
     public DoodleView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -23,7 +24,7 @@ public class DoodleView extends View {
         paint = new Paint();
         paint.setColor(0xFF000000); // Default black color
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(10f); // Default brush size
+        paint.setStrokeWidth(brushSize); // Default brush size
         paint.setAntiAlias(true);
 
         // Initialize paths and stacks
@@ -72,6 +73,18 @@ public class DoodleView extends View {
 
         invalidate(); // Redraw the view
         return true;
+    }
+
+    // Method to get the current brush size
+    public float getBrushSize() {
+        return brushSize;
+    }
+
+    // Method to set the brush size
+    public void setBrushSize(float size) {
+        this.brushSize = size;
+        paint.setStrokeWidth(size); // Update the Paint object
+        invalidate(); // Redraw with the new brush size
     }
 
     public void undo() {
